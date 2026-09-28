@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Título de la lección</title>
+<style>
+:root{--navy:#24345e;--navy2:#465d97;--ink:#14234e;--gold:#ffd15a;--bg:#f3f9ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+#shell{display:flex;min-height:100vh}
+.sidebar{width:280px;flex:none;background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:18px 16px;overflow-y:auto}
+.sidebar h1{font-size:18px;margin:0 0 14px}
+.side-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:none;color:#fff;
+  border-radius:14px;padding:11px 12px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;font-size:15px;min-height:50px}
+.side-item.active{background:linear-gradient(160deg,#526ba6,#3e578f);outline:2px solid #cbdcff}
+.side-item.completed .chk{opacity:1}
+.side-item .chk{opacity:.25}
+.side-progress{margin-left:auto;font-size:12px;opacity:.85}
+.topbar{display:flex;align-items:center;gap:16px;padding:12px 20px;background:#fff;border-bottom:1px solid #e2ecff}
+.topbar .pts,.topbar .time{font-size:14px;color:var(--navy)}
+#menuBtn{display:none;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:8px 12px;font-size:15px}
+.content{flex:1;position:relative;padding:24px;overflow-y:auto}
+.screen{display:none}
+.screen.active{display:block}
+.abody{max-width:1180px;margin:0 auto}
+.instr{font-size:19px;margin-bottom:16px}
+.opt,.item-chip,.slot{min-height:50px;font-size:17px;border-radius:14px;border:2px solid #d8e6ff;background:#fff;
+  padding:10px 16px;margin:6px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.opt.correct,.item-chip.correct{border-color:#2e9e4f;background:#eafff0}
+.opt.wrong{border-color:#d94b4b;background:#ffecec}
+.opt.locked{pointer-events:none;opacity:.7}
+.grid{display:flex;flex-wrap:wrap}
+input.fill{font-size:17px;padding:8px 10px;border:2px solid #d8e6ff;border-radius:10px;min-height:44px}
+input.fill.correct{border-color:#2e9e4f;background:#eafff0}
+input.fill.wrong{border-color:#d94b4b;background:#ffecec}
+.sbar{display:flex;justify-content:space-between;padding:14px 20px;background:#fff;border-top:1px solid #e2ecff}
+.sbar button{min-height:50px;font-size:16px;border-radius:999px;border:none;padding:10px 22px;cursor:pointer}
+#backBtn{background:#eef3ff;color:var(--navy)}
+#nextBtn{background:var(--navy);color:#fff}
+#nextBtn:disabled{opacity:.5}
+.fb{font-size:15px;color:var(--navy2)}
+#resumeModal{position:fixed;inset:0;background:rgba(20,30,60,.55);display:none;align-items:center;justify-content:center;z-index:999}
+#resumeModal.show{display:flex}
+.modal-card{background:#fff;border-radius:18px;padding:26px 28px;max-width:380px;text-align:center}
+.modal-card button{min-height:50px;font-size:16px;border-radius:999px;border:none;padding:10px 22px;margin:6px;cursor:pointer}
+@media (max-width:1000px){
+  .sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%);transition:transform .2s;z-index:200;visibility:hidden}
+  .sidebar.open{transform:translateX(0);visibility:visible}
+  #menuBtn{display:inline-block}
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:150}
+  #scrim.show{display:block}
+}
+</style>
+</head>
+<body>
+<div id="shell">
+  <nav class="sidebar" id="sidebar" aria-label="Navegación de la lección">
+    <h1>🧭 Nombre de la lección</h1>
+    <button class="side-item" data-s="s20"><span class="chk">✓</span><span>Guía para el adulto</span></button>
+    <button class="side-item" data-s="s22"><span class="chk">✓</span><span>Introducción</span></button>
+    <button class="side-item" data-s="s1" id="sideActGroup">
+      <span class="chk">✓</span><span>Actividades interactivas</span>
+      <span class="side-progress" id="actProgress">0/3</span>
+    </button>
+    <button class="side-item" data-s="s9"><span class="chk">✓</span><span>Resumen y Test</span></button>
+    <button class="side-item" data-s="s10"><span class="chk">✓</span><span>Puntaje final</span></button>
+  </nav>
+  <div id="scrim"></div>
+  <div style="flex:1;display:flex;flex-direction:column;min-height:100vh">
+    <div class="topbar">
+      <button id="menuBtn">☰ Menú</button>
+      <strong id="tb-user">Explorador</strong>
+      <span class="pts">⭐ <span id="tb-pts">0</span> pts</span>
+      <span class="time">⏱ <span id="tb-time">00:00</span></span>
+    </div>
+    <div class="content" id="contentArea">
+
+      <section class="screen" id="s20" data-s="s20">
+        <div class="abody">
+          <h2>Guía para el adulto acompañante</h2>
+          <p class="instr">Objetivos, cómo acompañar y estilos de aprendizaje que se activan en esta lección. Contenido informativo, no calificable — reemplázalo con tus propios objetivos.</p>
+        </div>
+      </section>
+
+      <section class="screen" id="s22" data-s="s22">
+        <div class="abody">
+          <h2 id="introTitle">¡Bienvenido! 👋</h2>
+          <p class="instr" id="introText">Reemplaza este texto con 2-3 frases que presenten el tema. Agrega tantas diapositivas como necesites repitiendo este mismo patrón.</p>
+          <button id="introStart" class="side-item" style="width:auto;background:var(--navy)">Empezar »</button>
+        </div>
+      </section>
+
+      <section class="screen" id="s1" data-s="s1">
+        <div class="abody">
+          <p class="instr">Mecánica 1 — Emparejar por clic-clic: toca un elemento y luego su pareja correcta.</p>
+          <div class="grid" id="matchItems">
+            <button class="item-chip" data-id="1">Elemento 1</button>
+            <button class="item-chip" data-id="2">Elemento 2</button>
+            <button class="item-chip" data-id="3">Elemento 3</button>
+          </div>
+          <div class="grid" id="matchSlots">
+            <button class="slot" data-id="a">Casilla A</button>
+            <button class="slot" data-id="b">Casilla B</button>
+            <button class="slot" data-id="c">Casilla C</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="s2" data-s="s2">
+        <div class="abody">
+          <p class="instr">Mecánica 2 — Completar: escribe la palabra que falta.</p>
+          <input class="fill" id="fillInput" data-answer="respuesta" placeholder="Escribe aquí...">
+        </div>
+      </section>
+
+      <section class="screen" id="s3" data-s="s3">
+        <div class="abody">
+          <p class="instr">Mecánica 3 — Elige la respuesta correcta.</p>
+          <div class="grid" id="pickOpts">
+            <button class="opt" data-value="a">Opción A</button>
+            <button class="opt" data-value="b">Opción B</button>
+            <button class="opt" data-value="c">Opción C</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="s9" data-s="s9">
+        <div class="abody">
+          <h2>Resumen y Test</h2>
+          <p class="instr">Resumen visual de lo aprendido (sin calificar) + test final de opción múltiple.</p>
+          <div id="testArea">
+            <p><strong>Pregunta de prueba:</strong> ¿cuál es la respuesta correcta?</p>
+            <div class="grid" id="testOpts">
+              <button class="opt" data-value="0">Opción 1</button>
+              <button class="opt" data-value="1">Opción 2 (correcta)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="s10" data-s="s10">
+        <div class="abody">
+          <h2>🏆 Puntaje final</h2>
+          <p class="instr">¡Bien hecho! Este es tu puntaje total.</p>
+          <table id="scoreTable" style="width:100%;font-size:16px"></table>
+          <p><strong>Total: <span id="scoreTotal">0</span> / <span id="scoreMax">0</span></strong></p>
+        </div>
+      </section>
+
+    </div>
+    <div class="sbar">
+      <button id="backBtn">‹ Atrás</button>
+      <span class="fb" id="fbText" aria-live="polite"></span>
+      <button id="nextBtn">Siguiente ›</button>
+    </div>
+  </div>
+</div>
+
+<div id="resumeModal">
+  <div class="modal-card">
+    <h3 id="resumeTitle">¡Hola!</h3>
+    <p id="resumeBody"></p>
+    <button id="resumeContinue">Continuar</button>
+    <button id="resumeRestart">Empezar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ======================================================================
+   ESQUELETO SCORM UNIVERSAL — copia este archivo y adapta solo los DATOS
+   (HTML de cada pantalla + los objetos de abajo). La lógica no se toca.
+   Ver GUIA-SCORM-UNIVERSAL.md para la explicación completa de cada bloque.
+   ====================================================================== */
+
+/* ---------- 1) SCORM 1.2 API (con fallback a localStorage) ---------- */
+var API = null;
+function findAPI(win){
+  var tries = 0;
+  while (win.API == null && win.parent != null && win.parent != win && tries < 10) { win = win.parent; tries++; }
+  return win.API || null;
+}
+try { API = findAPI(window); } catch(e) { API = null; }
+if (API) { try { API.LMSInitialize(''); } catch(e) {} }
+
+function lmsGet(key){
+  if (API) { try { return API.LMSGetValue(key); } catch(e) { return ''; } }
+  return localStorage.getItem('scorm_' + key) || '';
+}
+function lmsSet(key, val){
+  if (API) { try { API.LMSSetValue(key, val); API.LMSCommit(''); } catch(e) {} }
+  else { localStorage.setItem('scorm_' + key, val); }
+}
+
+/* ---------- 2) Los 5 objetos que gobiernan la lección (EDITA AQUÍ) ---------- */
+var ACT_SEQUENCE = ['s1','s2','s3'];
+var ACT_NAMES    = { s1:'Emparejar', s2:'Completar', s3:'Elegir la correcta' };
+var scores       = { match:0, write:0, pick:0, test:0 };
+var MAX          = { match:3, write:1, pick:1, test:1 };
+var KEY          = { s1:'match', s2:'write', s3:'pick', s9:'test' };
+var FB           = {
+  s20:'', s22:'', s1:'Toca un elemento y luego su pareja correcta.',
+  s2:'Escribe la palabra que falta y presiona Enter.', s3:'Elige la respuesta correcta.',
+  s9:'Responde la pregunta del test.', s10:''
+};
+var SCREENS = ['s20','s22','s1','s2','s3','s9','s10'];
+
+/* ---------- 3) Estado, navegación y progreso ---------- */
+var cur = 's20';
+var actDone = {};
+var ST = { loc:'s20', a:{}, nic:null, test:null, tt:0 };
+var sessionStart = Date.now();
+var totalPrev = 0;
+var RESTORING = false;
+
+function setFb(text){ if(!RESTORING) document.getElementById('fbText').textContent = text || ''; }
+
+function go(id){
+  cur = id;
+  if (id === 's10') calcScore();
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  document.querySelectorAll('.side-item').forEach(function(si){
+    var isGroup = si.id === 'sideActGroup';
+    si.classList.toggle('active', isGroup ? ACT_SEQUENCE.indexOf(id) !== -1 : si.dataset.s === id);
+  });
+  document.getElementById('contentArea').scrollTop = 0;
+  setFb(FB[id]);
+  updateBar();
+  ST.loc = id;
+  save();
+  closeDrawer();
+}
+window._goNext = go;
+
+document.querySelectorAll('.side-item').forEach(function(si){
+  si.addEventListener('click', function(){
+    var id = si.dataset.s;
+    if (id === 's1' && ACT_SEQUENCE.indexOf(cur) !== -1) return; /* ya estamos en el grupo */
+    go(id === 's1' ? ACT_SEQUENCE[0] : id);
+  });
+});
+
+function updateBar(){
+  var i = SCREENS.indexOf(cur);
+  document.getElementById('backBtn').disabled = i <= 0;
+  document.getElementById('nextBtn').disabled = i >= SCREENS.length - 1;
+}
+document.getElementById('backBtn').addEventListener('click', function(){
+  var i = SCREENS.indexOf(cur); if (i > 0) go(SCREENS[i - 1]);
+});
+document.getElementById('nextBtn').addEventListener('click', function(){
+  var i = SCREENS.indexOf(cur); if (i < SCREENS.length - 1) go(SCREENS[i + 1]);
+});
+
+function markSideDone(id){
+  if (ACT_SEQUENCE.indexOf(id) !== -1){
+    actDone[id] = true;
+    document.getElementById('actProgress').textContent = Object.keys(actDone).length + '/' + ACT_SEQUENCE.length;
+    return;
+  }
+  var el = document.querySelector('.side-item[data-s="' + id + '"] .chk');
+  if (el) el.style.opacity = 1;
+}
+
+/* ---------- 4) Puntaje total + persistencia parcial ---------- */
+function totalPts(){ return scores.match + scores.write + scores.pick + scores.test; }
+function totalMax(){ return MAX.match + MAX.write + MAX.pick + MAX.test; }
+var commitTimer = null;
+function updateGlobalPts(){
+  document.getElementById('tb-pts').textContent = totalPts();
+  clearTimeout(commitTimer);
+  commitTimer = setTimeout(function(){
+    lmsSet('cmi.core.score.raw', String(totalPts()));
+    lmsSet('cmi.core.score.max', String(totalMax()));
+    lmsSet('cmi.core.score.min', '0');
+  }, 1500);
+  save();
+}
+
+function calcScore(){
+  var rows = [
+    { n: 'Emparejar', s: scores.match, m: MAX.match },
+    { n: 'Completar', s: scores.write, m: MAX.write },
+    { n: 'Elegir la correcta', s: scores.pick, m: MAX.pick },
+    { n: 'Test final', s: scores.test, m: MAX.test }
+  ];
+  var html = rows.map(r => '<tr><td>' + r.n + '</td><td style="text-align:right">' + r.s + ' / ' + r.m + '</td></tr>').join('');
+  document.getElementById('scoreTable').innerHTML = html;
+  document.getElementById('scoreTotal').textContent = totalPts();
+  document.getElementById('scoreMax').textContent = totalMax();
+  var pct = totalMax() ? Math.round(100 * totalPts() / totalMax()) : 0;
+  lmsSet('cmi.core.lesson_status', pct >= 70 ? 'passed' : 'failed');
+}
+
+/* ---------- 5) rec()/RESTORERS — reanudación por acción, no por HTML ---------- */
+function rec(screenId, token){
+  ST.a[screenId] = ST.a[screenId] || [];
+  ST.a[screenId].push(token);
+  save();
+}
+var RESTORERS = {
+  s1: function(token){
+    var slot = document.querySelector('.slot[data-id="' + MATCH_ANSWER_SLOT(token) + '"]');
+    var chip = document.querySelector('.item-chip[data-id="' + token + '"]');
+    if (chip && slot) { chip.classList.add('used'); slot.appendChild(chip.cloneNode(true)); scores.match++; }
+  },
+  s2: function(token){
+    var input = document.getElementById('fillInput');
+    input.value = token; input.classList.add('correct'); input.disabled = true; scores.write++;
+  },
+  s3: function(token){
+    var opt = document.querySelector('#pickOpts .opt[data-value="' + token + '"]');
+    if (opt) { opt.classList.add('correct', 'locked'); scores.pick++; markSideDone('s3'); }
+  },
+  s9: function(token){
+    var opt = document.querySelector('#testOpts .opt[data-value="' + token + '"]');
+    if (opt) { opt.classList.add('correct', 'locked'); scores.test++; }
+  }
+};
+
+/* ---------- 6) Mecánica 1: emparejar clic-clic ---------- */
+var MATCH = { '1': 'a', '2': 'b', '3': 'c' }; // id del elemento -> id de la casilla correcta
+function MATCH_ANSWER_SLOT(itemId){ return MATCH[itemId]; }
+var selectedItem = null;
+document.querySelectorAll('#matchItems .item-chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    if (chip.classList.contains('used')) return;
+    document.querySelectorAll('.item-chip').forEach(c => c.classList.remove('correct'));
+    chip.classList.add('correct');
+    selectedItem = chip;
+  });
+});
+document.querySelectorAll('#matchSlots .slot').forEach(function(slot){
+  slot.addEventListener('click', function(){
+    if (!selectedItem) return;
+    var ok = MATCH[selectedItem.dataset.id] === slot.dataset.id;
+    if (ok) {
+      selectedItem.classList.add('used');
+      slot.appendChild(selectedItem.cloneNode(true));
+      scores.match++;
+      rec('s1', selectedItem.dataset.id);
+      if (scores.match >= MAX.match) markSideDone('s1');
+      setFb('¡Correcto!');
+    } else {
+      setFb('Intenta de nuevo.');
+    }
+    updateGlobalPts();
+  });
+});
+
+/* ---------- 7) Mecánica 2: completar (input de texto) ---------- */
+var fillInput = document.getElementById('fillInput');
+function checkFill(){
+  if (fillInput.disabled) return; /* disabling el input dispara 'blur': evita registrar el acierto dos veces */
+  var val = fillInput.value.trim().toLowerCase();
+  if (val === fillInput.dataset.answer) {
+    fillInput.classList.add('correct'); fillInput.disabled = true;
+    scores.write = MAX.write; rec('s2', val); markSideDone('s2'); setFb('¡Correcto!');
+  } else {
+    fillInput.classList.add('wrong'); setTimeout(() => fillInput.classList.remove('wrong'), 600);
+    setFb('Intenta de nuevo.');
+  }
+  updateGlobalPts();
+}
+fillInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); checkFill(); } });
+fillInput.addEventListener('blur', checkFill);
+
+/* ---------- 8) Helper genérico "elige 1 de N" (mecánicas 3, 9-19 de la guía) ---------- */
+function pick(container, answer, key, max, screenId, okText, badText){
+  container.querySelectorAll('.opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      if (opt.classList.contains('locked')) return;
+      var ok = opt.dataset.value === String(answer);
+      opt.classList.add(ok ? 'correct' : 'wrong');
+      if (ok) {
+        container.querySelectorAll('.opt').forEach(o => o.classList.add('locked'));
+        scores[key] = Math.min(max, (scores[key] || 0) + 1);
+        setFb(okText || '¡Correcto!');
+        rec(screenId, opt.dataset.value);
+        if (scores[key] >= max) markSideDone(screenId);
+      } else {
+        setFb(badText || 'Intenta de nuevo.');
+        setTimeout(() => opt.classList.remove('wrong'), 450);
+      }
+      updateGlobalPts();
+    });
+  });
+}
+pick(document.getElementById('pickOpts'), 'b', 'pick', MAX.pick, 's3');
+pick(document.getElementById('testOpts'), '1', 'test', MAX.test, 's9');
+
+/* ---------- 9) Introducción ---------- */
+document.getElementById('introStart').addEventListener('click', function(){ go('s1'); });
+
+/* ---------- 10) Reloj visible + cmi.core.session_time ---------- */
+function pad(n){ return n < 10 ? '0' + n : n; }
+function parseScormTime(t){
+  var m = /^(\d+):(\d+):(\d+(\.\d+)?)$/.exec(t || '');
+  if (!m) return 0;
+  return (+m[1]) * 3600 + (+m[2]) * 60 + parseFloat(m[3]);
+}
+function toScormTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  var h = Math.floor(sec / 3600), mi = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return pad(h) + ':' + pad(mi) + ':' + pad(s);
+}
+function tickTime(){
+  var elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  var total = totalPrev + elapsed;
+  document.getElementById('tb-time').textContent = pad(Math.floor(total / 60)) + ':' + pad(total % 60);
+}
+setInterval(tickTime, 1000);
+function commitSessionTime(){
+  var elapsed = (Date.now() - sessionStart) / 1000;
+  lmsSet('cmi.core.session_time', toScormTime(elapsed));
+}
+setInterval(commitSessionTime, 60000);
+window.addEventListener('beforeunload', commitSessionTime);
+document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') commitSessionTime(); });
+
+/* ---------- 11) Guardar / cargar estado (suspend_data + lesson_location) ---------- */
+function save(){
+  try { lmsSet('cmi.core.lesson_location', ST.loc); lmsSet('cmi.suspend_data', JSON.stringify(ST)); }
+  catch (e) { /* si supera ~4KB, compacta los datos de ST antes de agregar más preguntas */ }
+}
+function load(){
+  var raw = lmsGet('cmi.suspend_data');
+  if (!raw) return false;
+  try { var parsed = JSON.parse(raw); if (parsed && parsed.a) { ST = parsed; return true; } } catch (e) {}
+  return false;
+}
+function restoreState(){
+  RESTORING = true;
+  Object.keys(ST.a || {}).forEach(function(screenId){
+    (ST.a[screenId] || []).forEach(function(token){
+      if (RESTORERS[screenId]) RESTORERS[screenId](token);
+    });
+  });
+  RESTORING = false;
+  updateGlobalPts();
+  Object.keys(actDone).length; /* progreso ya recalculado por markSideDone durante la reproducción */
+}
+
+/* ---------- 12) Nombre del estudiante + saludo / reanudación ---------- */
+function firstName(){
+  var raw = lmsGet('cmi.core.student_name') || '';
+  var parts = raw.split(',');
+  var name = (parts[1] || parts[0] || '').trim();
+  return name || 'explorador';
+}
+document.getElementById('tb-user').textContent = firstName();
+
+function openResume(had){
+  var modal = document.getElementById('resumeModal');
+  if (had) {
+    document.getElementById('resumeTitle').textContent = '¡Bienvenido de nuevo, ' + firstName() + '!';
+    document.getElementById('resumeBody').textContent = 'Tienes ' + totalPts() + ' pts y estabas en: ' + (ACT_NAMES[ST.loc] || ST.loc);
+    document.getElementById('resumeRestart').style.display = '';
+  } else {
+    document.getElementById('resumeTitle').textContent = '¡Hola, ' + firstName() + '!';
+    document.getElementById('resumeBody').textContent = '¿Listo para empezar?';
+    document.getElementById('resumeContinue').textContent = 'Empezar';
+    document.getElementById('resumeRestart').style.display = 'none';
+  }
+  modal.classList.add('show');
+}
+document.getElementById('resumeContinue').addEventListener('click', function(){
+  document.getElementById('resumeModal').classList.remove('show');
+  go(ST.loc || 's20');
+});
+document.getElementById('resumeRestart').addEventListener('click', function(){
+  ST = { loc: 's20', a: {}, nic: null, test: null, tt: 0 };
+  scores = { match:0, write:0, pick:0, test:0 };
+  actDone = {};
+  sessionStart = Date.now(); totalPrev = 0;
+  document.getElementById('resumeModal').classList.remove('show');
+  go('s20');
+});
+
+/* ---------- 13) Menú móvil (cajón) ---------- */
+function closeDrawer(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+}
+document.getElementById('menuBtn').addEventListener('click', function(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('scrim').classList.add('show');
+});
+document.getElementById('scrim').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDrawer(); });
+
+/* ---------- 14) Arranque ---------- */
+(function start(){
+  lmsSet('cmi.core.exit', 'suspend');
+  totalPrev = parseScormTime(lmsGet('cmi.core.total_time'));
+  var had = load();
+  if (had) restoreState();
+  calcScore();
+  go(ST.loc || 's20');
+  openResume(had);
+})();
+
+window.addEventListener('beforeunload', function(){
+  commitSessionTime();
+  save();
+  if (API) { try { API.LMSFinish(''); } catch (e) {} }
+});
+</script>
+</body>
+</html>
