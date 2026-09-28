@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Explorer Challenge</title>
+<style>
+  *{box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;margin:0;}
+  body{background:linear-gradient(145deg,#3a4d86,#26345c);font-family:'Segoe UI','Comic Neue','Comic Sans MS',cursive,sans-serif;display:flex;align-items:center;justify-content:center;padding:12px;color:#1f2533;}
+  .app{width:100%;max-width:920px;height:100%;max-height:660px;background:#f4f6fb;border-radius:24px;box-shadow:0 16px 30px rgba(20,30,60,.3);display:flex;flex-direction:column;overflow:hidden;}
+  .hd{display:flex;align-items:center;gap:12px;padding:13px 18px;background:#2e3f6e;color:#fff;}
+  .hd .ti{flex:1;font-weight:800;font-size:1.12rem;line-height:1.15;}
+  .hd .ti small{display:block;font-weight:600;font-size:.72rem;color:#b9c3e6;letter-spacing:.04em;text-transform:uppercase;}
+  .hd .stars{background:#26345c;border-radius:20px;padding:5px 13px;font-size:.95rem;font-weight:700;white-space:nowrap;}
+  .dots{display:flex;gap:7px;justify-content:center;align-items:center;padding:9px;background:#eef1fb;}
+  .dot{width:11px;height:11px;border-radius:50%;background:#cdd5e8;cursor:pointer;transition:transform .1s;}
+  .dot.on{background:#4f6cc4;transform:scale(1.35);}
+  .dot.done{background:#3f9d6a;}
+  .stage{flex:1;overflow-y:auto;padding:18px 20px;}
+  .ft{display:flex;gap:10px;align-items:center;padding:11px 18px;background:#fff;border-top:1px solid #dfe4ef;}
+  .ft .sp{flex:1;}
+  h2{color:#2e3f6e;font-size:1.25rem;margin:0 0 6px;}
+  p{line-height:1.5;font-size:1rem;margin:8px 0;}
+  .mision{background:#eef1fb;border:1px solid #d7deff;border-left:5px solid #4f6cc4;border-radius:12px;padding:12px 14px;margin:10px 0 16px;font-size:.98rem;}
+  .mision b{color:#2e3f6e;}
+  button{background:#2e3f6e;border:none;border-radius:10px;padding:9px 16px;font-weight:700;color:#fff;cursor:pointer;font-size:.9rem;box-shadow:0 2px 3px rgba(20,30,60,.2);transition:.08s linear;}
+  button:hover{background:#4f6cc4;} button:active{transform:scale(.96);}
+  button.ghost{background:#fff;color:#2e3f6e;border:2px solid #d7deff;box-shadow:none;}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  .bank{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;min-height:62px;background:#fbfcff;border:2px dashed #c2cdf2;border-radius:14px;padding:10px;margin-bottom:14px;}
+  .chip{display:flex;align-items:center;gap:7px;background:#fff;border:2px solid #4f6cc4;color:#2e3f6e;border-radius:14px;padding:9px 13px;font-weight:700;font-size:.92rem;cursor:pointer;box-shadow:0 3px 0 #c2cdf2;}
+  .chip .e{font-size:1.5rem;line-height:1;}
+  .chip.sel{background:#eef1fb;outline:3px solid #ffb347;}
+  .chip.ok{border-color:#3f9d6a;background:#e8f6ee;box-shadow:0 3px 0 #b7e0c5;}
+  .chip.bad{border-color:#c0392b;background:#fbeae8;box-shadow:0 3px 0 #efc4bf;}
+  .boxes{display:flex;gap:11px;}
+  .box{flex:1;background:#fbfcff;border-radius:14px;box-shadow:inset 0 0 0 2px #d7deff;padding:10px 6px;text-align:center;cursor:pointer;}
+  .box h4{margin:0 0 8px;color:#2e3f6e;font-size:.92rem;}
+  .box .be{font-size:1.7rem;line-height:1;}
+  .box .drop{display:flex;flex-direction:column;gap:7px;align-items:center;min-height:90px;}
+  .box.over{box-shadow:inset 0 0 0 3px #4f6cc4;background:#eef1fb;}
+  .q{margin:14px 0;padding-top:10px;border-top:1px dashed #dfe4ef;}
+  .q:first-of-type{border-top:none;}
+  .qh{display:flex;align-items:center;gap:11px;margin-bottom:8px;}
+  .qh .qe{font-size:2rem;line-height:1;}
+  .qh .qt{font-weight:600;color:#1f2533;font-size:.98rem;}
+  .opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid #dfe4ef;color:#1f2533;border-radius:11px;padding:11px 14px;margin:7px 0;cursor:pointer;font-weight:600;box-shadow:none;}
+  .opt:hover{border-color:#4f6cc4;background:#fbfcff;}
+  .opt.sel{border-color:#4f6cc4;background:#eef1fb;}
+  .opt.ok{border-color:#3f9d6a;background:#e8f6ee;}
+  .opt.bad{border-color:#c0392b;background:#fbeae8;}
+  .fb{margin-top:12px;border-radius:12px;padding:11px;text-align:center;font-weight:700;display:none;}
+  .fb.show{display:block;}
+  .fb.ok{background:#eaf7ef;color:#1d6b41;border:1px solid #cfe8d6;}
+  .fb.bad{background:#fbeae8;color:#c0392b;border:1px solid #f2c9c4;}
+  .canvas-wrap{text-align:center;margin:6px 0 4px;}
+  .canvas-arena{background:#eccc7a;border-radius:14px;cursor:pointer;}
+  .clock-canvas{background:#fff2cf;border-radius:50%;cursor:pointer;}
+  .toolrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0;}
+  .hero{text-align:center;}
+  .hero .big{font-size:4rem;line-height:1;margin:4px 0;}
+  .concl{width:100%;min-height:90px;border:2.5px solid #d7deff;border-radius:14px;padding:12px 14px;font-size:1rem;line-height:1.5;font-family:inherit;color:#1f2533;background:#fbfcff;resize:vertical;}
+  .concl:focus{outline:none;border-color:#4f6cc4;background:#fff;box-shadow:0 0 0 4px rgba(79,108,196,.15);}
+  .modelo{display:none;margin-top:10px;background:#eaf7ef;border:1px solid #cfe8d6;border-left:5px solid #3f9d6a;border-radius:12px;padding:11px 13px;font-size:.95rem;line-height:1.5;}
+  .modelo.show{display:block;}
+  .nameinp{width:100%;border:2px solid #d7deff;border-radius:12px;padding:10px 13px;font-size:1rem;font-family:inherit;margin:8px 0;}
+  #printArea{display:none;}
+  @media print{ body *{visibility:hidden;} #printArea,#printArea *{visibility:visible;} #printArea{display:block;position:absolute;left:0;top:0;width:100%;} }
+
+  /* \u2550\u2550 Tema Toy Explorer 3D (solo estilo) \u2550\u2550 */
+  html,body{background:transparent !important;height:auto !important;}
+  body{padding:0 2px 10px;display:block;font-family:"Nunito","Segoe UI Rounded","Arial Rounded MT Bold","Trebuchet MS","Segoe UI",system-ui,sans-serif;color:#101f59;}
+  .app{max-width:none;max-height:none;height:auto;background:transparent;box-shadow:none;border-radius:0;overflow:visible;}
+  .hd{background:linear-gradient(145deg,#ffffff,#e8f4ff);color:#101f59;border:2px solid #fff;border-radius:26px;box-shadow:0 12px 22px rgba(48,115,169,.12),inset 0 2px 1px rgba(255,255,255,.95);padding:14px 22px;}
+  .hd .ti{font-size:24px;} .hd .ti small{color:#3b4f96;font-size:12px;letter-spacing:.12em;font-weight:900;}
+  .hd .stars{background:#fff;color:#101f59;border:2px solid #fff;box-shadow:0 6px 14px rgba(48,115,169,.15);font-size:18px;padding:8px 16px;border-radius:999px;}
+  .dots{background:transparent;padding:12px;gap:10px;} .dot{width:14px;height:14px;background:#cfe3fb;} .dot.on{background:#3b4f96;} .dot.done{background:#27ae60;}
+  .stage{padding:10px 6px;overflow:visible;}
+  h2{font-size:28px;color:#101f59;font-weight:900;}
+  .mision{background:#e3f1ff;border:none;border-left:none;border-radius:18px;font-size:20px;font-weight:800;color:#101f59;padding:14px 20px;}
+  .mision b{color:#3b4f96;}
+  .bank{background:transparent;border:none;padding:6px 0;gap:14px;min-height:0;}
+  .chip{background:linear-gradient(145deg,#ffffff,#e8f4ff);border:2px solid #fff;border-radius:20px;box-shadow:0 12px 22px rgba(48,115,169,.12),inset 0 2px 1px rgba(255,255,255,.95);font-size:20px;font-weight:900;color:#101f59;padding:10px 16px;gap:10px;transition:transform .18s,box-shadow .18s;}
+  .chip:hover{transform:translateY(-4px);box-shadow:0 17px 26px rgba(48,115,169,.18);}
+  .chip .e{font-size:2.4rem;display:flex;align-items:center;filter:drop-shadow(0 4px 4px rgba(48,115,169,.25));}
+  .chip .e .t3d{height:84px;width:auto;border-radius:14px;display:block;filter:none;}
+  .chip.sel{outline:none;border-color:#ffd15a;box-shadow:0 0 0 4px rgba(255,209,90,.55),0 12px 22px rgba(48,115,169,.12);}
+  .chip.ok{border-color:#7fd4a6;background:linear-gradient(145deg,#ffffff,#e9fbf0);box-shadow:0 8px 16px rgba(24,115,76,.18);}
+  .chip.bad{border-color:#f0a0a0;background:#ffecec;box-shadow:0 8px 16px rgba(181,65,54,.18);}
+  .boxes{gap:18px;margin-top:12px;}
+  .box{background:linear-gradient(145deg,#ffffff,#e8f4ff);border:2px solid #fff;border-radius:26px;box-shadow:0 12px 22px rgba(48,115,169,.12),inset 0 2px 1px rgba(255,255,255,.95);padding:16px 12px;}
+  .box h4{font-size:22px;color:#101f59;margin-bottom:12px;}
+  .box .be{font-size:2.6rem;filter:drop-shadow(0 4px 4px rgba(48,115,169,.25));}
+  .box .drop{min-height:150px;gap:10px;flex-direction:row;flex-wrap:wrap;justify-content:center;}
+  .box.over{box-shadow:0 0 0 4px rgba(46,63,110,.35),0 12px 22px rgba(48,115,169,.12);background:linear-gradient(145deg,#ffffff,#dcedff);}
+  button{background:linear-gradient(145deg,#5468b3,#2e3f6e);border:2px solid #fff;border-radius:999px;box-shadow:0 6px 0 #1f2d55,0 12px 18px rgba(46,63,110,.3);font-size:19px;font-weight:900;padding:12px 26px;font-family:inherit;}
+  button:hover{background:linear-gradient(145deg,#6577c0,#3a4d86);} button:active{transform:translateY(4px);box-shadow:0 2px 0 #1f2d55;}
+  button.ghost{background:linear-gradient(#ffffff,#eef5ff);color:#3b4f96;border:2px solid #cfe3fb;box-shadow:0 6px 0 #cfe3fb,0 12px 18px rgba(56,109,156,.12);}
+  button.ghost:active{box-shadow:0 2px 0 #cfe3fb;}
+  .ft{background:transparent;border-top:none;padding:14px 4px 6px;}
+  .fb{font-size:19px;border-radius:18px;padding:14px;}
+  .fb.ok{background:#e9fbf0;color:#18734c;border:2px solid #7fd4a6;} .fb.bad{background:#ffecec;color:#b54136;border:2px solid #f0a0a0;}
+  .hero .big{font-size:5.5rem;filter:drop-shadow(0 8px 6px rgba(48,115,169,.25));}
+  .hero h2{font-size:32px;} .hero p{font-size:21px;line-height:1.5;}
+  p{font-size:19px;}
+  .concl{font-size:19px;border:2px solid #cfe3fb;border-radius:18px;} .modelo{font-size:18px;border-radius:18px;border:2px solid #7fd4a6;border-left:2px solid #7fd4a6;}
+  .nameinp{font-size:20px;border:2px solid #cfe3fb;border-radius:999px;padding:12px 18px;}
+  .toolrow{gap:14px;margin:14px 0;}
+  .arcade-wrap{border-radius:20px;overflow:hidden;box-shadow:0 12px 22px rgba(48,115,169,.12);}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hd">
+    <div class="ti">Family Explorer Challenge<small id="subti">Your family adventure</small></div>
+    <div class="stars" id="stars">\u2b50 0/5</div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="stage" id="stage"></div>
+</div>
+<div id="printArea"></div>
+<script>
+  /* ===================================================================
+     EDITA AQU\u00cd: TEMAS Y CONTENIDO DE LOS RETOS (Retos para gigantes)
+     - 'clasificar': cajas + items {e:emoji, l:texto, c:idCaja}
+     - 'arena' / 'reloj': mini-juego de canvas + preguntas {e,t,o:[..],correcta}
+     Usa SIEMPRE ids r1..r5 (el motor califica retos_r1..retos_r5 en Moodle).
+     NO cambies el motor de abajo (render/postMessage).
+  =================================================================== */
+  var RETOS = [
+    { id:'r1', tipo:'clasificar', titulo:'Challenge 1 \u00b7 Who is who?',
+      mision:'Tap a card and then its box. Is it in the <b>FAMILY WORDS</b> or <b>DESCRIBING WORDS</b> group?',
+      cajas:[{id:'family',e:'\ud83d\udc6a',n:'FAMILY WORDS'},{id:'desc',e:'\ud83d\udccf',n:'DESCRIBING WORDS'}],
+      items:[{e:'\ud83d\udc69',l:'mum',c:'family'},{e:'\ud83d\udc68',l:'dad',c:'family'},{e:'\ud83d\udc67',l:'sister',c:'family'},{e:'\ud83d\udc66',l:'brother',c:'family'},
+             {e:'\ud83d\udccf',l:'tall',c:'desc'},{e:'\ud83d\udccf',l:'short',c:'desc'}] },
+    { id:'r2', tipo:'clasificar', titulo:'Challenge 2 \u00b7 Grown-ups or kids?',
+      mision:'Sort each family word. Is that person a <b>GROWN-UP</b> or a <b>KID</b>?',
+      cajas:[{id:'adult',e:'\ud83e\uddd1',n:'GROWN-UPS'},{id:'kid',e:'\ud83e\uddd2',n:'KIDS'}],
+      items:[{e:'\ud83d\udc69',l:'mum',c:'adult'},{e:'\ud83d\udc68',l:'dad',c:'adult'},{e:'\ud83d\udc75',l:'grandma',c:'adult'},{e:'\ud83d\udc74',l:'grandpa',c:'adult'},
+             {e:'\ud83d\udc67',l:'sister',c:'kid'},{e:'\ud83d\udc66',l:'brother',c:'kid'}] },
+    { id:'r3', tipo:'clasificar', titulo:'Challenge 3 \u00b7 Tall or short?',
+      mision:'Remember our story. Sort each person into <b>TALL</b> or <b>SHORT</b>.',
+      cajas:[{id:'tall',e:'\ud83d\udcc8',n:'TALL'},{id:'short',e:'\ud83d\udcc9',n:'SHORT'}],
+      items:[{e:'\ud83d\udc66',l:'brother',c:'tall'},{e:'\ud83d\udc68',l:'dad',c:'short'}] },
+    { id:'r4', tipo:'clasificar', titulo:'Challenge 4 \u00b7 Kind or not kind?',
+      mision:'Which phrases are kind? Sort them into <b>KIND</b> and <b>NOT KIND</b>.',
+      cajas:[{id:'kind',e:'\ud83e\udd1d',n:'KIND'},{id:'notkind',e:'\ud83d\udeab',n:'NOT KIND'}],
+      items:[{e:'\ud83d\udc4d',l:'Nice to meet you!',c:'kind'},{e:'\ud83d\ude0a',l:'We are all different!',c:'kind'},
+             {e:'\ud83d\ude20',l:'Go away!',c:'notkind'},{e:'\ud83d\ude45',l:'I will not play with you!',c:'notkind'}] },
+    { id:'r5', tipo:'clasificar', titulo:'Challenge 5 \u00b7 Complete the family',
+      mision:'Sort each word: is it a word for a <b>WOMAN</b> or a <b>MAN</b> in the family?',
+      cajas:[{id:'woman',e:'\ud83d\udc69',n:'WOMAN'},{id:'man',e:'\ud83d\udc68',n:'MAN'}],
+      items:[{e:'\ud83d\udc69',l:'mum',c:'woman'},{e:'\ud83d\udc67',l:'sister',c:'woman'},{e:'\ud83d\udc75',l:'grandma',c:'woman'},
+             {e:'\ud83d\udc68',l:'dad',c:'man'},{e:'\ud83d\udc66',l:'brother',c:'man'},{e:'\ud83d\udc74',l:'grandpa',c:'man'}] }
+  ];
+  var N = RETOS.length;
+  var screen = 0;             // 0 = intro, 1..N = retos, N+1 = final
+  var done = {};              // retos resueltos (estrella)
+  var selChip = null;
+  var conclText = '';
+  var stage = document.getElementById('stage');
+  var dotsEl = document.getElementById('dots');
+  var starsEl = document.getElementById('stars');
+  var subEl = document.getElementById('subti');
+
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function starCount(){var c=0;for(var k in done)if(done[k])c++;return c;}
+  function reportReto(id,ok){ try{ parent.postMessage({__retoResult:{id:id,ok:ok}}, '*'); }catch(e){} }
+
+  function buildDots(){
+    var h='';
+    for(var i=0;i<=N+1;i++){
+      var cls='dot'+(i===screen?' on':'');
+      if(i>=1&&i<=N&&done[RETOS[i-1].id])cls+=' done';
+      h+='<span class="'+cls+'" data-go="'+i+'"></span>';
+    }
+    dotsEl.innerHTML=h;
+    var ds=dotsEl.querySelectorAll('.dot');
+    for(var j=0;j<ds.length;j++){ds[j].onclick=function(){go(+this.getAttribute('data-go'));};}
+  }
+  function refreshStars(){ starsEl.textContent='\u2b50 '+starCount()+'/'+N; }
+
+  function go(i){
+    if(i<0||i>N+1)return;
+    screen=i; selChip=null;
+    if(i===0)subEl.textContent='Your school adventure';
+    else if(i<=N)subEl.textContent=RETOS[i-1].titulo;
+    else subEl.textContent='Challenge complete!';
+    render(); buildDots(); refreshStars(); stage.scrollTop=0;
+    try{ parent.postMessage({source:'HSC_RETOS_NAV', screen:i, total:N+1}, '*'); }catch(e){}
+  }
+
+  function render(){
+    if(screen===0){ renderIntro(); return; }
+    if(screen===N+1){ renderFinal(); return; }
+    var r=RETOS[screen-1];
+    if(r.tipo==='clasificar') renderClasificar(r);
+    else if(r.tipo==='arena') renderArena(r);
+    else if(r.tipo==='reloj') renderReloj(r);
+    else if(r.tipo==='arcade') renderArcadeBonus(r);
+  }
+
+  function renderIntro(){
+    stage.innerHTML='<div class="hero"><div class="big">\ud83c\udfeb</div>'+
+      '<h2>Hi! Welcome to the Family Explorer Challenge!</h2>'+
+      '<p>Complete <b>5 challenges</b> about <b>family words</b>, <b>describing people</b> and <b>being kind</b> to become the <b>Family Explorer Champion</b>.</p>'+
+      '<p>Win a \u2b50 in each challenge. Get all 5 stars!</p>'+
+      '<div class="toolrow"><button id="startB">Start the challenge! \ud83d\ude80</button></div></div>';
+    document.getElementById('startB').onclick=function(){go(1);};
+  }
+
+  function renderClasificar(r){
+    var chips=shuffle(r.items.map(function(it,i){return {it:it,i:i};}));
+    var h='<h2>'+esc(r.titulo)+'</h2><div class="mision">\ud83c\udfaf <b>Your mission:</b> '+r.mision+'</div>';
+    h+='<div class="bank" id="bank">';
+    chips.forEach(function(o){ h+='<div class="chip" data-i="'+o.i+'"><span class="e">'+o.it.e+'</span><span>'+esc(o.it.l)+'</span></div>'; });
+    h+='</div><div class="boxes">';
+    r.cajas.forEach(function(c){ h+='<div class="box" data-box="'+c.id+'"><div class="be">'+c.e+'</div><h4>'+esc(c.n)+'</h4><div class="drop"></div></div>'; });
+    h+='</div><div class="toolrow"><button id="checkB">\u2705 Check</button><button class="ghost" id="resetB">\u21ba Reset</button></div>';
+    h+='<div class="fb" id="fb"></div>';
+    stage.innerHTML=h;
+    var bank=document.getElementById('bank');
+    var chipEls=stage.querySelectorAll('.chip');
+    var boxEls=stage.querySelectorAll('.box');
+    var fb=document.getElementById('fb');
+    function clearSel(){ if(selChip)selChip.classList.remove('sel'); selChip=null; }
+    chipEls.forEach=Array.prototype.forEach;
+    [].forEach.call(chipEls,function(ch){
+      ch.onclick=function(){ if(ch.classList.contains('ok'))return;
+        if(selChip===ch){clearSel();return;}
+        if(selChip)selChip.classList.remove('sel');
+        selChip=ch; ch.classList.add('sel'); };
+    });
+    [].forEach.call(boxEls,function(bx){
+      bx.onclick=function(){ if(selChip){ bx.querySelector('.drop').appendChild(selChip); selChip.classList.remove('sel'); selChip.classList.remove('bad'); selChip=null; fb.className='fb'; } };
+    });
+    bank.onclick=function(e){ if(e.target===bank && selChip){ bank.appendChild(selChip); selChip.classList.remove('sel'); selChip=null; } };
+    document.getElementById('resetB').onclick=function(){
+      [].forEach.call(stage.querySelectorAll('.chip'),function(c){ c.classList.remove('ok','bad','sel'); bank.appendChild(c); });
+      selChip=null; fb.className='fb';
+    };
+    document.getElementById('checkB').onclick=function(){
+      var all=stage.querySelectorAll('.chip'); var placed=0, ok=true;
+      [].forEach.call(all,function(c){
+        var it=r.items[+c.getAttribute('data-i')]; var box=c.closest('.box'); c.classList.remove('ok','bad');
+        if(!box){ok=false;return;} placed++;
+        if(box.getAttribute('data-box')===it.c)c.classList.add('ok'); else {c.classList.add('bad');ok=false;}
+      });
+      if(placed<all.length){ fb.className='fb bad show'; fb.textContent='Put every card in a box.'; return; }
+      reportReto(r.id, ok);
+      if(ok){ done[r.id]=true; refreshStars(); buildDots(); fb.className='fb ok show'; fb.textContent='Perfect! You won a star \u2b50'; }
+      else { fb.className='fb bad show'; fb.textContent='Almost\u2026 check the red cards and try again.'; }
+    };
+  }
+
+  function renderQuiz(r, extraHTML, afterRender){
+    var h='<h2>'+esc(r.titulo)+'</h2><div class="mision">\ud83c\udfaf <b>Your mission:</b> '+r.mision+'</div>';
+    h+=extraHTML||'';
+    r.preguntas.forEach(function(q,qi){
+      h+='<div class="q" data-qi="'+qi+'"><div class="qh"><span class="qe">'+q.e+'</span><span class="qt">'+esc(q.t)+'</span></div>';
+      q.o.forEach(function(op,oi){ h+='<button class="opt" data-qi="'+qi+'" data-oi="'+oi+'">'+esc(op)+'</button>'; });
+      h+='</div>';
+    });
+    h+='<div class="toolrow"><button id="checkB">\u2705 Check</button></div><div class="fb" id="fb"></div>';
+    stage.innerHTML=h;
+    if(afterRender)afterRender();
+    var ans={}; var fb=document.getElementById('fb');
+    [].forEach.call(stage.querySelectorAll('.opt'),function(op){
+      op.onclick=function(){ if(op.closest('.q').querySelector('.opt.ok'))return;
+        var qi=op.getAttribute('data-qi');
+        [].forEach.call(stage.querySelectorAll('.opt[data-qi="'+qi+'"]'),function(x){x.classList.remove('sel');});
+        op.classList.add('sel'); ans[qi]=+op.getAttribute('data-oi'); };
+    });
+    document.getElementById('checkB').onclick=function(){
+      var ok=true, all=true;
+      r.preguntas.forEach(function(q,qi){
+        var sel=stage.querySelector('.opt[data-qi="'+qi+'"].sel'); if(!sel){all=false;return;}
+        [].forEach.call(stage.querySelectorAll('.opt[data-qi="'+qi+'"]'),function(x){x.classList.remove('ok','bad');});
+        if(ans[qi]===q.correcta)sel.classList.add('ok'); else {sel.classList.add('bad');ok=false;}
+      });
+      if(!all){ fb.className='fb bad show'; fb.textContent='Responde todas las preguntas.'; return; }
+      reportReto(r.id, ok);
+      if(ok){ done[r.id]=true; refreshStars(); buildDots(); fb.className='fb ok show'; fb.textContent='Excellent! Star won \u2b50'; }
+      else { fb.className='fb bad show'; fb.textContent='Revisa las respuestas rojas e int\u00e9ntalo de nuevo.'; }
+    };
+  }
+
+  function renderArena(r){
+    var extra='<div class="canvas-wrap"><canvas id="sandC" width="150" height="190" class="canvas-arena" style="width:150px;height:190px"></canvas>'+
+      '<div class="toolrow"><button id="emptyB">\u25b6\ufe0f Vaciar arena</button><button class="ghost" id="fillB">\u21ba Llenar</button></div>'+
+      '<p id="sandMsg" style="font-size:.9rem">Pulsa \u201cVaciar\u201d y observa c\u00f3mo baja la arena.</p></div>';
+    renderQuiz(r, extra, function(){
+      var c=document.getElementById('sandC'); var x=c.getContext('2d'); var lvl=1.0, iv=null;
+      function draw(){ x.clearRect(0,0,150,190); x.fillStyle='#dfe4ef'; x.fillRect(0,0,150,190);
+        x.fillStyle='#c9cfe0'; x.beginPath(); x.moveTo(28,18); x.lineTo(122,18); x.lineTo(93,95); x.lineTo(57,95); x.fill();
+        x.fillStyle='#f4d58c'; var sh=72*lvl; x.fillRect(50,95-sh,50,sh);
+        x.fillStyle='#f4d58c'; var bh=72*(1-lvl); x.fillRect(50,170-bh,50,bh);
+        x.fillStyle='#b6c0d8'; x.fillRect(40,170,70,16); x.fillRect(40,4,70,14); }
+      draw();
+      document.getElementById('emptyB').onclick=function(){ if(iv)clearInterval(iv); if(lvl<=0)lvl=1.0;
+        iv=setInterval(function(){ lvl-=0.04; if(lvl<=0){lvl=0;clearInterval(iv);iv=null;document.getElementById('sandMsg').textContent='\u23f3 La arena se acab\u00f3: \u00a1el tiempo pas\u00f3!';} draw(); },80); };
+      document.getElementById('fillB').onclick=function(){ if(iv)clearInterval(iv); lvl=1.0; draw(); document.getElementById('sandMsg').textContent='Reloj lleno otra vez.'; };
+    });
+  }
+
+  function renderReloj(r){
+    var extra='<div class="canvas-wrap"><canvas id="clkC" width="160" height="160" class="clock-canvas" style="width:160px;height:160px"></canvas>'+
+      '<div class="toolrow"><button id="hB">\u2795 +1 Hora</button><button id="mB">\u2795 +10 Min</button><button class="ghost" id="rB">\ud83d\udd5b 12:00</button></div>'+
+      '<p style="font-size:.92rem">Hora: <b id="clkT">12:00</b> \u00b7 arrastra sobre el reloj para girarlo</p></div>';
+    renderQuiz(r, extra, function(){
+      var c=document.getElementById('clkC'); var x=c.getContext('2d'); var hh=12, mm=0;
+      function draw(){ x.clearRect(0,0,160,160); x.beginPath(); x.arc(80,80,72,0,2*Math.PI); x.fillStyle='#fff5e6'; x.fill(); x.strokeStyle='#2e3f6e'; x.lineWidth=3; x.stroke();
+        for(var i=1;i<=12;i++){var a=i*Math.PI*2/12-Math.PI/2;var px=80+62*Math.cos(a),py=80+62*Math.sin(a);x.fillStyle='#2e3f6e';x.font='bold 15px Segoe UI';x.fillText(i.toString(),px-6,py+6);}
+        var ha=(hh%12+mm/60)*(Math.PI*2/12)-Math.PI/2; var ma=mm*(Math.PI*2/60)-Math.PI/2;
+        x.beginPath();x.moveTo(80,80);x.lineTo(80+40*Math.cos(ha),80+40*Math.sin(ha));x.lineWidth=5;x.strokeStyle='#2e3f6e';x.stroke();
+        x.beginPath();x.moveTo(80,80);x.lineTo(80+60*Math.cos(ma),80+60*Math.sin(ma));x.lineWidth=3;x.strokeStyle='#e07c2c';x.stroke();
+        document.getElementById('clkT').textContent=(hh<10?'0'+hh:hh)+':'+(mm<10?'0'+mm:mm); }
+      function setFrom(ev){ var rect=c.getBoundingClientRect(); var mx=(ev.clientX-rect.left)*(160/rect.width), my=(ev.clientY-rect.top)*(160/rect.height);
+        var ang=Math.atan2(my-80,mx-80)+Math.PI/2; if(ang<0)ang+=2*Math.PI; var mins=(ang/(2*Math.PI))*60; mm=(Math.round(mins/5)*5)%60; draw(); }
+      draw();
+      c.addEventListener('mousedown',function(e){ setFrom(e); var mv=function(me){setFrom(me);}; var up=function(){c.removeEventListener('mousemove',mv);c.removeEventListener('mouseup',up);}; c.addEventListener('mousemove',mv); c.addEventListener('mouseup',up); });
+      c.addEventListener('touchmove',function(e){e.preventDefault(); if(e.touches[0])setFrom(e.touches[0]);},{passive:false});
+      document.getElementById('hB').onclick=function(){hh=(hh%12)+1;draw();};
+      document.getElementById('mB').onclick=function(){mm=(mm+10)%60;draw();};
+      document.getElementById('rB').onclick=function(){hh=12;mm=0;draw();};
+    });
+  }
+
+  /* \u2500\u2500 Bonus: motor de misiones (iframe con su propio timer/vidas/zombies, sin tocar su c\u00f3digo) \u2500\u2500
+     Se considera ganado cuando las 6 misiones internas reportan \u00e9xito al menos una vez. */
+  var arcadeSeen = {};
+  function renderArcadeBonus(r){
+    var already = done[r.id];
+    var h = '<h2>'+esc(r.titulo)+'</h2><div class="mision">\ud83c\udfae <b>Your mission:</b> '+r.mision+'</div>';
+    h += '<div class="arcade-wrap"><iframe id="arcadeFrame" title="Toy Explorer Missions" scrolling="no" style="width:100%;border:none;border-radius:16px;min-height:640px;"></iframe></div>';
+    h += '<div class="fb'+(already?' ok show':'')+'" id="fb">'+(already?'\u2b50 Bonus already won! You can keep playing for fun.':'')+'</div>';
+    stage.innerHTML = h;
+    var f = document.getElementById('arcadeFrame');
+    if (!f.getAttribute('data-mounted')) {
+      f.setAttribute('data-mounted','1');
+      f.srcdoc = ARCADE_SIM;
+    }
+    if (!window.__arcadeResizeIv) {
+      window.__arcadeResizeIv = setInterval(function(){
+        var fr = document.getElementById('arcadeFrame');
+        if (!fr) return;
+        try {
+          var d = fr.contentDocument;
+          if (d && d.body) {
+            var hgt = Math.max(640, d.body.scrollHeight) + 8;
+            if (Math.abs(fr.offsetHeight - hgt) > 6) fr.style.height = hgt + 'px';
+          }
+        } catch (e) {}
+      }, 400);
+    }
+  }
+  window.addEventListener('message', function(e){
+    var m = e.data;
+    if (!m || m.source !== 'HSC_SIM' || m.type !== 'result_evaluated') return;
+    if (!m.data || !m.data.success || !m.data.done) return;
+    arcadeSeen[m.mission] = true;
+    if (Object.keys(arcadeSeen).length >= 6 && !done['r6']) {
+      done['r6'] = true;
+      reportReto('r6', true);
+      refreshStars(); buildDots();
+      var fb = document.getElementById('fb');
+      if (fb) { fb.className = 'fb ok show'; fb.textContent = '\u2b50 Bonus complete! You finished all 6 missions.'; }
+    }
+  });
+
+  function renderFinal(){
+    var c=starCount(); var win=(c===N);
+    var h='<div class="hero"><div class="big">'+(win?'\ud83c\udfc6':'\ud83e\udded')+'</div>'+
+      '<h2>'+(win?'Congratulations, Family Explorer Champion!':'Good job, almost there!')+'</h2>'+
+      '<p>You got <b>'+c+' of '+N+'</b> stars. '+(win?'You know your family words, how to describe people and how to be kind!':'Go back to the challenges you missed to win all the stars.')+'</p></div>';
+    h+='<p style="font-weight:700;color:#2e3f6e;margin-top:14px">\ud83d\udcdd My conclusions: Tell me about your family!</p>';
+    h+='<textarea class="concl" id="conclTA" placeholder="Write here in English\u2026 (I have a mum, a dad and a sister.)">'+esc(conclText)+'</textarea>';
+    h+='<div class="toolrow"><button class="ghost" id="modelB">\ud83d\udca1 See an example</button></div>';
+    h+='<div class="modelo" id="modelo"><b>Example:</b> I have a mum, a dad and a brother. My brother is tall. We are all different, and that\u2019s special!</div>';
+    h+='<div class="toolrow"><button class="ghost" id="playAgainB">\u21ba Play again</button></div>';
+    if(win){
+      h+='<p style="font-weight:700;color:#2e3f6e;margin-top:14px">\ud83c\udfc5 Write your name for your diploma:</p>';
+      h+='<input class="nameinp" id="nameInp" placeholder="Your name" maxlength="40">';
+      h+='<div class="toolrow"><button id="printB">\ud83d\udda8\ufe0f Print my diploma</button></div>';
+    }
+    stage.innerHTML=h;
+    var ta=document.getElementById('conclTA');
+    ta.oninput=function(){ conclText=ta.value; };
+    document.getElementById('modelB').onclick=function(){ document.getElementById('modelo').classList.add('show'); };
+    document.getElementById('playAgainB').onclick=function(){ done={}; conclText=''; go(0); };
+    if(win){
+      document.getElementById('printB').onclick=function(){
+        var nm=(document.getElementById('nameInp').value||'Family Explorer Champion').trim();
+        var pa=document.getElementById('printArea');
+        pa.innerHTML='<div style="font-family:Georgia,serif;text-align:center;padding:40px;border:8px double #2e3f6e;margin:24px;border-radius:14px">'+
+          '<div style="font-size:54px">\ud83c\udfc6</div><h1 style="color:#2e3f6e">Family Explorer Champion Diploma</h1>'+
+          '<p style="font-size:18px">Awarded to</p>'+
+          '<div style="font-size:30px;font-weight:bold;border-bottom:2px solid #333;display:inline-block;padding:0 30px 6px">'+esc(nm)+'</div>'+
+          '<p style="font-size:16px;max-width:520px;margin:22px auto">for completing the 5 challenges of Unit 3 \u00b7 That\u2019s My Family!: family words, describing people and being kind.</p>'+
+          '<p style="margin-top:26px;color:#555">Home Schooling Colombia \u00b7 English \u00b7 Grade 1</p></div>';
+        setTimeout(function(){window.print();},120);
+      };
+    }
+  }
+
+  go(0);
+<\/script>
+</body>
+</html>

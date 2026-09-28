@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="hsc-build" content="HSC-ENG-G1-U3-ThatsMyFamily-V1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>That's My Family! | Unit 3 | V1</title>
+<style>
+{{ENGINE_CSS}}
+/* ══ Iconos de emoji en vez de navicons (no tenemos el set de íconos 3D de HSC) ══ */
+.hsc-icon-em{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.fam-em{font-size:64px;line-height:1;display:inline-block;filter:drop-shadow(0 6px 5px rgba(48,115,169,.25));}
+.fam-card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);text-align:center;}
+.worksheet-panel{max-width:820px;margin:0 auto;}
+.worksheet-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;}
+.worksheet-viewer{margin-top:14px;}
+.worksheet-pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;font-weight:700;color:var(--navy);}
+.worksheet-stage{text-align:center;}
+.worksheet-stage img{max-width:100%;max-height:520px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.worksheet-confirm{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#333;}
+.worksheet-dialog{border:none;border-radius:16px;padding:0;max-width:92vw;max-height:92vh;}
+.worksheet-dialog header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--navy);color:#fff;}
+.worksheet-dialog img{display:block;max-width:90vw;max-height:80vh;}
+.worksheet-extra{max-width:820px;margin:14px auto 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="menuBtn" class="menu-btn" aria-label="Menú">☰</button>
+    <div><div class="title">That's My Family!</div><div class="subtitle">Unit 3 · Grade 1</div></div>
+  </div>
+  <div class="tb-user"><span class="u" id="tb-user" style="display:none;"></span><span class="t" id="tb-time">⏱ 0:00</span><span class="pts" id="g-pts">0 pts</span></div>
+</div>
+<div id="resumeModal"><div class="rm-box"><div class="em">👋</div><h2 id="rm-title">Welcome back!</h2><p id="rm-text"></p><div class="rm-btns"><button class="b b-go" id="rm-go">▶ Continue</button><button class="b b-sec" id="rm-restart">↺ Start over</button></div></div></div>
+
+<div class="shell" id="shell">
+  <nav class="sidebar" id="sidebar" aria-label="Navegación de la lección">
+    <div class="hsc-brand-row">
+      <div class="hsc-brand"><span class="hsc-logo"><img src="data:image/webp;base64,{{LOGO_B64}}" alt="Logo Home Schooling Colombia"></span><span class="hsc-copy"><span class="hsc-name">HSC</span><span class="hsc-detail">Home Schooling<br>Colombia</span></span></div>
+      <button type="button" class="hsc-toggle" id="sideToggle" aria-label="Contraer menú" aria-expanded="true" aria-controls="sidebar" title="Contraer menú"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg></button>
+    </div>
+    <div class="hsc-adventure"><div><h2>Mi aventura</h2><p>That's My Family! · Unidad 3</p></div><span class="hsc-icon-em" style="width:56px;height:56px;font-size:30px;border-radius:50%;">👪</span></div>
+    <div class="hsc-progress"><div><div class="hsc-progress-title">Tu progreso</div><div class="hsc-progress-cap" id="progText">0 de 7 actividades</div></div><div class="hsc-progress-pct" id="progPct" aria-hidden="true">0%</div><div class="hsc-progress-bar" role="progressbar" aria-label="Actividades completadas" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0" id="progBarWrap"><i id="progBar"></i></div></div>
+    <div class="hsc-group"><h3 class="hsc-group-title" id="grpPadres">PARA LOS PADRES</h3><ul class="hsc-list" aria-labelledby="grpPadres">
+        <li><button type="button" class="side-item hsc-nav-item active" data-s="s20" aria-current="page"><span class="hsc-icon-em">🧭</span><span class="hsc-body"><span class="hsc-label">Guía de acompañamiento</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s21"><span class="hsc-icon-em">💡</span><span class="hsc-body"><span class="hsc-label">Guía de apoyos</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+    </ul></div>
+    <div class="hsc-group"><h3 class="hsc-group-title" id="grpNinos">PARA LOS NIÑOS</h3><ul class="hsc-list" aria-labelledby="grpNinos">
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s22"><span class="hsc-icon-em">📖</span><span class="hsc-body"><span class="hsc-label">Introducción</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s1" id="sideActGroup"><span class="hsc-icon-em">🎯</span><span class="hsc-body"><span class="hsc-label">Actividades interactivas</span><span class="hsc-here">Estás aquí</span></span><span class="hsc-badge" id="actProgress">0/7</span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s8"><span class="hsc-icon-em">🏆</span><span class="hsc-body"><span class="hsc-label">Final Challenge</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s9"><span class="hsc-icon-em">📝</span><span class="hsc-body"><span class="hsc-label">Actividad de trabajo escrito</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+        <li><button type="button" class="side-item hsc-nav-item" data-s="s10"><span class="hsc-icon-em">🏁</span><span class="hsc-body"><span class="hsc-label">Resumen y Test</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+    </ul></div>
+    <div class="hsc-footer"><ul class="hsc-list" aria-label="Acceso final">
+        <li><button type="button" class="side-item hsc-nav-item final" data-s="s11"><span class="hsc-icon-em">⭐</span><span class="hsc-body"><span class="hsc-label">Final Score</span><span class="hsc-here">Estás aquí</span></span><svg class="hsc-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></li>
+    </ul></div>
+  </nav>
+
+  <div class="side-scrim" id="sideScrim"></div>
+  <div class="content">
+    <div id="actArrows">
+      <button class="act-arrow left" id="actArrowLeft" title="Previous activity" data-lbl="Back">&#8249;</button>
+      <button class="act-arrow right" id="actArrowRight" title="Next activity" data-lbl="Next">&#8250;</button>
+    </div>
+    <div class="act-header" id="act-hdr">🧭 Guía de acompañamiento <span class="act-pts" id="act-pts">0 pts</span></div>
+
+    <div class="area" id="area">
+
+      <!-- S20 GUÍA DE ACOMPAÑAMIENTO -->
+      <div class="screen active" id="s20">
+        <div class="instr" style="margin-bottom:10px;">🧭 Guía de acompañamiento — para papá, mamá o quien acompañe esta lección.</div>
+        <div class="info-wrap">
+          <div class="info-card"><h3>🎯 Objetivos de la lección</h3><p>Reconocer y usar en inglés las palabras de la familia (mum, dad, sister, brother, grandma, grandpa), describir a las personas con "tall/short", y valorar que cada familia es diferente y especial.</p></div>
+          <div class="info-card"><h3>📘 Referente curricular</h3><p><span class="info-badge">Inglés</span>Comprensión y uso de vocabulario básico relacionado con la familia, y expresión oral/escrita de descripciones simples con adjetivos de uso cotidiano.</p></div>
+          <div class="info-card"><h3>🤝 Cómo acompañar</h3><ul><li>Deja que explore cada actividad antes de intervenir.</li><li>Anímalo a decir las palabras en voz alta, no solo a escribirlas.</li><li>El dibujo libre nunca se califica — no lo corrijas, solo celebra el esfuerzo.</li><li>Si se equivoca, invítalo a intentarlo de nuevo en vez de dar la respuesta.</li></ul></div>
+          <div class="info-card"><h3>🧠 Formas de aprender que se activan</h3><p>Visual (tarjetas e íconos de la familia), auditiva (lectura de las frases y 🔊), kinestésica (arrastrar, tocar, deletrear) y lecto-escritora (completar palabras y frases).</p></div>
+        </div>
+      </div>
+
+      <!-- S21 GUÍA DE APOYOS -->
+      <div class="screen" id="s21">
+        <div class="instr" style="margin-bottom:10px;">💡 Guía de apoyos — orientación para familias sobre apoyos y ajustes razonables.</div>
+        <div class="info-wrap">
+          <div class="grid2">
+            <div class="info-card">👁️ <strong>Apoyo visual:</strong> íconos grandes, numeración clara y buen contraste en cada actividad.</div>
+            <div class="info-card">👂 <strong>Apoyo auditivo:</strong> botón 🔊 para escuchar de nuevo, sin límite de veces.</div>
+            <div class="info-card">✋ <strong>Apoyo motor:</strong> funciona con mouse, trackpad o dedo, sin cronómetro que presione, zonas de toque amplias.</div>
+            <div class="info-card">💬 <strong>Apoyo emocional:</strong> el dibujo libre nunca se califica como correcto/incorrecto, para reducir la ansiedad ante el error.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S22 INTRODUCCIÓN -->
+      <div class="screen" id="s22">
+        <div class="cover-wrap" id="introStage">
+          <div class="intro-slide active" data-i="1">
+            <div class="ill"><span class="fam-em">👋👨‍👩‍👧‍👦</span></div>
+            <div class="itxt"><h1>👋 Hi, explorer!</h1><p>Welcome to <span class="kw y">That's My Family!</span></p><p>Everyone has a family, and every family is <span class="kw g">special</span>.</p><button class="say speak" data-say="Hi, explorer! Welcome to That's My Family! Everyone has a family, and every family is special.">🔊 Listen</button></div>
+          </div>
+          <div class="intro-slide" data-i="2">
+            <div class="ill"><div class="toygrid" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;"><span class="fam-em" style="font-size:52px;">👩</span><span class="fam-em" style="font-size:52px;">👨</span><span class="fam-em" style="font-size:52px;">👧</span><span class="fam-em" style="font-size:52px;">👦</span><span class="fam-em" style="font-size:52px;">👵</span><span class="fam-em" style="font-size:52px;">👴</span></div></div>
+            <div class="itxt"><h1>👪 Meet the family words</h1><p><span class="kw y">mum</span> · <span class="kw y">dad</span> · <span class="kw y">sister</span> · <span class="kw y">brother</span> · <span class="kw y">grandma</span> · <span class="kw y">grandpa</span></p><p>Can you say them out loud?</p><button class="say speak" data-say="mum, dad, sister, brother, grandma, grandpa">🔊 Listen</button></div>
+          </div>
+          <div class="intro-slide" data-i="3">
+            <div class="ill"><img src="data:image/jpeg;base64,{{GIRL_B64}}" alt="Emma" style="max-height:100%;border-radius:14px;"></div>
+            <div class="itxt"><h1>🎧 Emma's phonics</h1><p>Listen for the sound <span class="kw">/m/</span>.</p><p><span class="kw y">m u m</span> — <b>mum</b>!</p><p>Who's that? That's my <b>brother</b>!</p><button class="say speak" data-say="Emma's phonics. M, u, m. Mum! Who's that? That's my brother!">🔊 Listen</button></div>
+          </div>
+          <div class="intro-slide" data-i="4">
+            <div class="ill"><span class="fam-em">📏🧍‍♂️🧍</span></div>
+            <div class="itxt"><h1>📏 Tall or short?</h1><p>We can describe people too: <span class="kw g">"He's tall."</span> <span class="kw p">"He's short."</span></p><p>Let's practise with our own family!</p><button class="say speak" data-say="Tall or short? He's tall. He's short.">🔊 Listen</button></div>
+          </div>
+          <div class="intro-slide" data-i="5">
+            <div class="ill"><span class="fam-em">🤝❤️🌍</span></div>
+            <div class="itxt"><h1>🤝 We're all different!</h1><p>Some families are big, some are small.</p><p>And that's what makes every family <span class="kw p">amazing</span>!</p><button class="say speak" data-say="We're all different! And that's what makes every family amazing!">🔊 Listen</button></div>
+          </div>
+          <div class="intro-slide" data-i="6">
+            <div class="ill"><span class="fam-em">🎒✨</span></div>
+            <div class="itxt"><h1>🎒 Are you ready?</h1><p>Let's play, write, and learn all about <span class="kw o">"That's my family!"</span></p><button class="say speak" data-say="Are you ready? Let's start!">🔊 Listen</button><br><button class="cover-start" onclick="window._goNext('s1')">Start »</button></div>
+          </div>
+          <div class="intro-dots" id="introDots">
+            <div class="intro-dot active" data-i="1"></div><div class="intro-dot" data-i="2"></div><div class="intro-dot" data-i="3"></div><div class="intro-dot" data-i="4"></div><div class="intro-dot" data-i="5"></div><div class="intro-dot" data-i="6"></div>
+          </div>
+        </div>
+        <button class="act-arrow left" id="introBack" data-lbl="Back" style="position:absolute;left:8px;top:50%;">&#8249;</button>
+        <button class="act-arrow right" id="introNext" data-lbl="Next" style="position:absolute;right:8px;top:50%;">&#8250;</button>
+      </div>
+
+      <!-- S1 VOCABULARY MATCH -->
+      <div class="screen" id="s1"><div class="instr">👪 Vocabulary Match — Tap a word, then tap the matching family picture. Match all 6!</div><div class="card"><div class="wordbank" id="matchBank"></div><div class="grid5" id="matchGrid"></div></div></div>
+
+      <!-- S2 PHONICS & DIALOGUE -->
+      <div class="screen" id="s2"><div class="instr">🎧 Phonics &amp; Dialogue — Complete the word, then complete the dialogue.</div><div class="grid2" id="phonGrid"></div></div>
+
+      <!-- S3 DESCRIBING FAMILY & HOLIDAYS -->
+      <div class="screen" id="s3"><div class="instr">📏 Describing Family &amp; Holidays — Look and choose the correct word.</div><div class="grid2" id="descGrid"></div></div>
+
+      <!-- S4 VALUES -->
+      <div class="screen" id="s4"><div class="instr">🤝 We're all different! — Tap a word, then tap the gap to complete the dialogue.</div><div class="card"><div class="wordbank" id="valBank"></div><div class="sentence">A: This is my <span class="gap target" data-g="0">____</span>.</div><div class="sentence">B: Hello! Nice to <span class="gap target" data-g="1">____</span> you!</div><div class="sentence">C: We're all different! And that's <span class="gap target" data-g="2">____</span>! <button class="speak" data-say="This is my sister. Hello! Nice to meet you! We're all different! And that's special!">🔊</button></div></div></div>
+
+      <!-- S5 IMAGINE & DRAW -->
+      <div class="screen" id="s5"><div class="instr">🎨 Imagine &amp; Draw! — Close your eyes, imagine your family, then draw them. There is no wrong answer.</div><div class="card"><div class="tools"><span style="font-weight:700;color:var(--navy);">Colour:</span><div class="swatch sel" data-c="#2e3f6e" style="background:#2e3f6e"></div><div class="swatch" data-c="#e74c3c" style="background:#e74c3c"></div><div class="swatch" data-c="#27ae60" style="background:#27ae60"></div><div class="swatch" data-c="#3498db" style="background:#3498db"></div><div class="swatch" data-c="#f39c12" style="background:#f39c12"></div><div class="swatch" data-c="#9b59b6" style="background:#9b59b6"></div><button class="b b-sec" id="drawClear" style="margin-left:auto;">🧽 Clear</button></div><canvas id="drawCanvas" width="760" height="390"></canvas><div id="drawMsg" style="margin-top:8px;font-size:14px;color:#7a88ad;">Draw your family with your finger or mouse — no wrong answer.</div></div></div>
+
+      <!-- S6 SPELLING TIME -->
+      <div class="screen" id="s6"><div class="instr">🔤 Spelling Time! — The letters are mixed up! Tap them in order.</div><div class="grid2" id="spGrid"></div></div>
+
+      <!-- S7 YES OR NO -->
+      <div class="screen" id="s7"><div class="instr">❓ Yes or No? — Look and read. Choose YES or NO.</div><div class="grid2" id="ynGrid"></div></div>
+
+      <!-- S8 FINAL CHALLENGE -->
+      <div class="screen" id="s8">
+        <div class="instr" style="margin-bottom:10px;">🎮 Family Explorer Challenge — 5 mini-challenges. All 5 count for your score!</div>
+        <div class="retos-wrap">
+          <iframe id="retosFrame" title="Family Explorer Challenge" scrolling="no"></iframe>
+        </div>
+      </div>
+
+      <!-- S9 TRABAJO ESCRITO -->
+      <div class="screen" id="s9">
+        <div class="instr"><div class="instruction-copy">📝 Tu guía para trabajar en papel<small>Imprime las 3 páginas. Completa las actividades con lápiz y colores, con ayuda de un adulto.</small></div></div>
+        <div class="info-wrap">
+          <div class="info-card worksheet-panel">
+            <h3>Guía escrita · That's My Family!</h3>
+            <p>Esta es la guía de referencia de la unidad. Recorre sus páginas aquí y descarga el PDF para hacerla a mano.</p>
+            <div class="worksheet-actions">
+              <button class="b b-pri" id="pdfBtn" type="button">⬇ Descargar PDF</button>
+              <button class="b b-sec" id="worksheetOpen" type="button">Abrir / imprimir PDF</button>
+              <button class="b b-sec" id="worksheetZoom" type="button">Ampliar página</button>
+            </div>
+            <div class="worksheet-viewer">
+              <div class="worksheet-pager">
+                <button class="b b-sec" id="worksheetPrev" type="button">‹ Página anterior</button>
+                <span class="worksheet-count" id="worksheetCount" aria-live="polite">Página 1 de 3</span>
+                <button class="b b-sec" id="worksheetNext" type="button">Página siguiente ›</button>
+              </div>
+              <div class="worksheet-stage"><img id="worksheetPage" alt="Guía original, página 1 de 3"></div>
+            </div>
+            <div id="worksheetStatus" role="status" aria-live="polite"></div>
+            <label class="worksheet-confirm"><input id="worksheetDone" type="checkbox"><span><b>Un adulto confirma:</b> terminé y revisé las 3 páginas de la guía. Descargarla no marca esta tarea como completada.</span></label>
+          </div>
+          <details class="info-card worksheet-extra"><summary>Después de la guía: dos ideas para practicar (opcionales)</summary>
+            <h3>1. Family interview</h3><p>Pregúntale a un familiar: <b>"How old are you?"</b> y <b>"Are you tall or short?"</b> Escribe sus respuestas.</p>
+            <h3>2. My family tree poster</h3><p>Dibuja tu árbol familiar y escribe el nombre en inglés de cada persona (mum, dad, sister, brother, grandma, grandpa).</p>
+          </details>
+        </div>
+      </div>
+
+      <!-- S10 RESUMEN Y TEST -->
+      <div class="screen" id="s10">
+        <div class="instr" style="margin-bottom:10px;">🏁 What we learned — Review the unit, then take the test.</div>
+        <div class="sum-track-wrap"><div class="sum-track" id="sumTrack">
+          <div class="sum-slide" data-t="1 · Family words"><div class="ill sum-ill"><div class="toygrid t5" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">👩👨👧👦👵👴</div></div><div class="itxt"><h1>👪 Six family words!</h1><p>mum · dad · sister · brother · grandma · grandpa</p><p><i>Seis palabras de la familia en inglés.</i></p><button class="say speak" data-say="mum, dad, sister, brother, grandma, grandpa">🔊 Listen</button></div></div>
+          <div class="sum-slide" data-t="2 · Tall or short"><div class="ill sum-ill"><span class="fam-em">📏</span></div><div class="itxt"><h1>📏 Describing people</h1><p><span class="kw">That's my brother. He's tall.</span> — <i>Mi hermano es alto.</i></p><p><span class="kw y">That's my dad. He's short.</span> — <i>Mi papá es bajito.</i></p><button class="say speak" data-say="That's my brother. He's tall. That's my dad. He's short.">🔊 Listen</button></div></div>
+          <div class="sum-slide" data-t="3 · Our values"><div class="ill sum-ill"><span class="fam-em">🤝</span></div><div class="itxt"><h1>🤝 Our values</h1><p><span class="kw g">"We're all different! And that's what makes us special!"</span></p><button class="say speak" data-say="We're all different! And that's what makes us special!">🔊 Listen</button></div></div>
+          <div class="sum-slide" data-t="4 · My reflection"><div class="ill sum-ill"><span class="fam-em">💭</span></div><div class="itxt"><h1>💭 Mi reflexión</h1><span class="reflection-status">Actividad libre · No tiene calificación.</span><p>¿Cómo te sientes con tu familia? Puedes responder en español o en inglés.</p><textarea class="reflex-box" id="reflexBox" placeholder="My family is..."></textarea></div></div>
+          <div class="sum-slide sum-test" data-t="5 · Final test"><div class="card test-card" style="width:100%;margin-top:0;"><h1 style="color:var(--ink);font-size:28px;margin:0 0 10px;">✏️ Final test — it counts!</h1><div class="test-track-wrap"><div class="test-track" id="testTrack"></div></div><div class="test-nav"><button type="button" class="b b-back" id="testPrev">‹ Anterior</button><div class="intro-dots" id="testDots"></div><button type="button" class="b b-pri" id="testNext">Siguiente ›</button></div></div></div>
+        </div></div><div class="intro-dots" id="sumDots"></div>
+      </div>
+
+      <!-- S11 FINAL SCORE -->
+      <div class="screen" id="s11">
+        <div class="sc-wrap">
+          <div class="sc-emoji" id="sc-e">🏆</div>
+          <div class="sc-title" id="sc-t">Well done!</div>
+          <table class="sc-table" id="sc-tb"></table>
+          <button class="b b-pri" id="sc-retry">Try Again</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sbar">
+      <span id="sbar-back"></span>
+      <span id="sbar-prog"></span>
+      <span class="fb" id="g-fb" role="status" aria-live="polite"></span>
+      <span id="sbar-btns"></span>
+    </div>
+  </div>
+</div>
+
+<dialog id="worksheetDialog" class="worksheet-dialog"><header><span id="worksheetZoomTitle">Guía original</span><button class="b b-sec" id="worksheetClose" type="button">Cerrar ×</button></header><img id="worksheetZoomPage" alt="Página ampliada de la guía original"></dialog>
+
+<script id="hsc-worksheet-pages" type="application/json">["data:image/jpeg;base64,{{WPAGE1_B64}}","data:image/jpeg;base64,{{WPAGE2_B64}}","data:image/jpeg;base64,{{WPAGE3_B64}}"]</script>
+<script>window.WORKSHEET_PAGES=JSON.parse(document.getElementById('hsc-worksheet-pages').textContent);</script>
+<script id="hsc-retos-sim" type="application/json">{{RETOS_SIM_JSON}}</script>
+<script>window.RETOS_SIM=JSON.parse(document.getElementById('hsc-retos-sim').textContent).split('<\\/script').join('</script');</script>
+<script id="hsc-pdf-b64" type="application/json">{{PDF_B64_JSON}}</script>
+<script>window.PDF_B64=JSON.parse(document.getElementById('hsc-pdf-b64').textContent);</script>
+<script>
+{{SCRIPT}}
+</script>
+</body>
+</html>
